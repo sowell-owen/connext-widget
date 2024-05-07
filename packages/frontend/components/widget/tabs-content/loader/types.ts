@@ -1,0 +1,1 @@
+export type TXTransferStatus = "XCalled" | "Executed" | "Reconciled" | "CompletedFast" | "CompletedSlow";
