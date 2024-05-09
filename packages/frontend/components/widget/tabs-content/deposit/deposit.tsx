@@ -142,7 +142,7 @@ export default function Deposit() {
     useEffect(() => {
         const timer = setTimeout(() => {
             try {
-                if (chain?.domainId && signer && isConnected && chain?.chainId === currentChainIdInWallet && connextSDK !== undefined) {
+                if (chain?.domainId && signer && isConnected && chain?.chainId === currentChainIdInWallet && connextSDK !== undefined && userBalance?.symbol && Number(enteredETH) >= 0) {
                     setCalculatingFees(true);
                     setError(false);
                     const prepareTx = async(domainId: number) => {
@@ -170,7 +170,7 @@ export default function Deposit() {
                         // perform an xcall
                         const xcallTxReq = await connextSDK?.xcall(xcallParams);
                         if (!xcallTxReq) return;  
-                        
+
                         // generate raw tx
                         const populatedTx = await signer?.populateTransaction({ 
                             ...xcallTxReq,
@@ -181,7 +181,11 @@ export default function Deposit() {
                         
                         // update ui
                         setEstimateGasValue(formatEther(populatedTx?.gasLimit as bigint))
-                        setMaxFeePerGas(formatEther(populatedTx?.maxFeePerGas as bigint))
+                        if (populatedTx?.maxFeePerGas) {
+                            setMaxFeePerGas(formatEther(populatedTx?.maxFeePerGas as bigint))
+                        } else {
+                            setMaxFeePerGas("0");
+                        }
                         setPopulatedTx({...populatedTx });
                         setCalculatingFees(false);
                     }
@@ -197,7 +201,7 @@ export default function Deposit() {
         return () => {
             clearTimeout(timer);
         }
-    }, [chain, signer, isConnected, currentChainIdInWallet, connextSDK, enteredETH]);
+    }, [chain, signer, isConnected, currentChainIdInWallet, connextSDK, enteredETH, userBalance?.symbol]);
 
 
     // chain change
@@ -239,8 +243,7 @@ export default function Deposit() {
                 couldBeDepositedInWETH = Number(balance) - maxFPerGas - esGas;
             }
 
-            // check for native balance sufficience to perform tx
-            return Number(nativeBalance?.formatted) - relFee > 0 ? couldBeDepositedInWETH : -1;
+            return couldBeDepositedInWETH;
         }
     }
 
@@ -398,7 +401,7 @@ export default function Deposit() {
                             <FormControl variant="filled" sx={{width: "100%", textAlign: "start"}}>
                                 <InputLabel id="chain-select-filled-label">Chain</InputLabel>
                                 <Select
-                                    disabled={!isConnected || txPending || calculatingFees}
+                                    disabled={!isConnected || txPending}
                                     labelId="chain-select-filled-label"
                                     value={chain?.name ? toSentenceCase(chain?.name) : "Xdai"}
                                     onChange={handleChainChange}
@@ -564,10 +567,11 @@ export default function Deposit() {
                                             </Button>
                                         );
                                     } else if (
-                                        !inputRef?.current?.value || 
-                                        (Number(inputRef?.current?.value) > Number(userBalance?.formatted)) || 
+                                        !inputRef?.current?.value ||
+                                        (Number(inputRef?.current?.value) > Number(userBalance?.formatted)) ||
                                         +inputRef?.current?.value > getAvailableDeposit() ||
-                                        inputRef?.current?.value && (+inputRef?.current?.value == 0 || getAvailableDeposit(+inputRef?.current?.value) < 0)
+                                        inputRef?.current?.value && (+inputRef?.current?.value == 0 || getAvailableDeposit(+inputRef?.current?.value) < 0) ||
+                                        Number(nativeBalance?.formatted) - Number(relayerFee) < 0
                                     ) {
                                         return (
                                             <Button startIcon={<Error/>} disabled={true} fullWidth color="error" variant="contained"
@@ -576,6 +580,10 @@ export default function Deposit() {
                                                 {(() => {
                                                     if (inputRef?.current?.value && (+inputRef?.current?.value == 0)) {
                                                         return "Unsufficient balance";
+                                                    }
+
+                                                    if (Number(nativeBalance?.formatted) - Number(relayerFee) < 0) {
+                                                        return `Not enough ${nativeBalance?.symbol} balance`;
                                                     }
 
                                                     if (getAvailableDeposit(Number(amountReceived)) < 0) {
@@ -592,7 +600,7 @@ export default function Deposit() {
                                             ?
                                             <Button startIcon={<Error/>} disabled={!error} onClick={handleDepositClick} color="error" fullWidth variant="contained" sx={{ fontWeight: "bold", padding: 2 }}>
                                                 An error occured, pls try again
-                                            </Button> 
+                                            </Button>
                                             :
                                             <Button startIcon={<PriceCheck/>} disabled={txPending || calculatingFees || populatedTx === undefined} onClick={handleDepositClick} fullWidth variant="contained" sx={{ fontWeight: "bold", padding: 2 }}>
                                                 {txPending ? 'Processing...' : 'Deposit'}
