@@ -93,7 +93,7 @@ export const chains = [
     },
     {
         name: "BNB Chain",
-        provider: "https://endpoints.omniatech.io/v1/bsc/mainnet/public",
+        provider: "https://bsc.nodereal.io",
         domain_id: "6450786",
         chain_id: "56",
         nativeUSDC: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"
@@ -148,7 +148,7 @@ export const WETH_CONFIG: Record<number, string> = {
     // optimism
     1869640809: "0x4200000000000000000000000000000000000006",
     // bsc
-    6450786: "0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA", //"0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+    6450786: "0x2170Ed0880ac9A755fd29B2688956BD959F933F8", //"0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
     // ethereum mainnet
     6648936: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
     // arbitrum
