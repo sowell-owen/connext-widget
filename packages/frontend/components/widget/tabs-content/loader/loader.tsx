@@ -1,9 +1,9 @@
-import { Box, Button, Step, StepLabel, Stepper, Typography } from "@mui/material";
+import { Box, Button, Link, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import * as React from 'react';
 import CircularProgress, { CircularProgressProps } from '@mui/material/CircularProgress';
 import { SdkUtils } from "@connext/sdk";
 import { TXTransferStatus } from "./types";
-import { Verified } from "@mui/icons-material";
+import { OpenInNew, Verified } from "@mui/icons-material";
 
 // used to get MM:SS string from seconds
 const toMMSS = (sec_num: number) =>  {
@@ -58,10 +58,14 @@ export default function Loader(props: {
     hash: string,
     setTxHash: (a: string) => void;
     sdkUtils: SdkUtils | undefined;
+    from: string;
+    to: string;
 }) {
-    const { hash, setTxHash, sdkUtils } = props;
+    const { hash, setTxHash, sdkUtils, from, to } = props;
     const [ counter, setCounter ] = React.useState(0);
     const [ status,  setStatus  ] = React.useState<TXTransferStatus>("XCalled");
+
+    const isFinished = counter === totalTime;
 
     // returns user to main page by setting txHash ""
     const handleGoBack = () => {
@@ -88,7 +92,7 @@ export default function Loader(props: {
                 const transfers = await sdkUtils?.getTransfers({
                     transactionHash: hash,
                 });
-                
+
                 // transaction exists
                 if (transfers.length > 0) {
                     console.log(transfers[0]);
@@ -108,26 +112,44 @@ export default function Loader(props: {
     return (
         <>
             <Stepper activeStep={steps.indexOf(status) !== -1 ? steps.indexOf(status) : steps.length } alternativeLabel>
-                {steps.map((label) => (
-                    <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
-                    </Step>
-                ))}
+                <Step>
+                    <StepLabel>{from}</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>{to}</StepLabel>
+                </Step>
             </Stepper>
             <Box sx={{ height: '285px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <CircularProgressWithLabel time={totalTime - counter} value={((totalTime - (totalTime - counter)) * 100) / (totalTime)}/>
             </Box>
-            <Button 
+            <Button
                 startIcon={<Verified/>}
-                disabled={!["CompletedFast", "CompletedSlow", "Executed"].includes(status)} 
-                fullWidth 
-                variant="contained" 
+                disabled={!["CompletedFast", "CompletedSlow", "Executed"].includes(status)}
+                fullWidth
+                variant="contained"
                 sx={{ fontWeight: "bold", padding: 2 }}
                 onClick={handleGoBack}
             >
                 Completed, go back
             </Button>
+            <Link
+                target="_blank"
+                href={`https://connextscan.io/tx/${hash}`}
+                underline={isFinished ? "always" : "none"}
+                color={isFinished ? "primary" : "inherit"}
+                sx={{
+                    display:'flex',
+                    justifyContent:'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    opacity: isFinished ? 1 : 0.5,
+                    cursor: isFinished ? 'pointer' : 'default',
+                    mt: 2,
+                }}
+            >
+                <OpenInNew sx={{ mr: 1 }}/>
+                View Transaction
+            </Link>
         </>
     );
 }
-
