@@ -1,4 +1,4 @@
-export const DESTINATION_DOMAIN_ID = 1634886255 // destination domain id, where our Vault contract is deployed
+export const DESTINATION_DOMAIN_ID = "1634886255" // destination domain id, where our Vault contract is deployed
 
 export const VAULT_ADPATER_CHAIN_ID = "42161";
 export const VAULT_ADAPTER_ADDRESS = "0x9827C9A21EE4E31502707354433fcC1CCE9E46F6";
