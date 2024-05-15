@@ -258,6 +258,11 @@ export default function Deposit() {
     const handleMaxETHClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         let availableDeposit = getAvailableDeposit();
         //console.log("AV DEP:", availableDeposit);
+        if (Number(availableDeposit) < 0) {
+            availableDeposit = "0.00";
+        } else {
+            availableDeposit = (""+availableDeposit).slice(0, 8);
+        }
         availableDeposit = (""+availableDeposit).slice(0, 8);
         setEnteredETH(availableDeposit);
         inputRef?.current && (inputRef.current.value = availableDeposit)
