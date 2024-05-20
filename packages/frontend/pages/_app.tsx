@@ -16,6 +16,7 @@ import {
   metis,
   mode,
   gnosis,
+  xLayer
 } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -32,7 +33,7 @@ const config = getDefaultConfig({
       wallets: [argentWallet, trustWallet, ledgerWallet],
     },
   ],
-  chains: [ mainnet, polygon, optimism, arbitrum, base, bsc, linea, metis, mode, gnosis ],
+  chains: [ mainnet, polygon, optimism, arbitrum, base, bsc, linea, metis, mode, gnosis, xLayer ],
   ssr: true, // required for nextJS
 });
 

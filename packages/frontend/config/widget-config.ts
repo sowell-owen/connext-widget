@@ -10,7 +10,8 @@ import {
     metis,
     mode,
     gnosis,
-    sepolia
+    sepolia,
+    xLayer
   } from '@wagmi/core/chains';
 import { Chain } from 'viem';
 import { VAULT_ADPATER_CHAIN_ID } from '../constants';
@@ -27,7 +28,8 @@ export const wagmiConfigCore = createConfig({
         metis as Chain,
         mode as Chain,
         gnosis as Chain,
-        sepolia as Chain
+        sepolia as Chain,
+        xLayer as Chain
     ],
     transports: {
         [arbitrum.id]: http(),
@@ -41,6 +43,7 @@ export const wagmiConfigCore = createConfig({
         [mode.id]: http(),
         [gnosis.id]: http(),
         [sepolia.id]:http(),
+        [xLayer.id]:http(),
     },
 });
 
@@ -125,6 +128,13 @@ export const chains = [
         domain_id: "1836016741",
         chain_id: "34443",
         nativeUSDC: ''
+    },
+    {
+        name: "XLayer",
+        provider: "https://rpc.xlayer.tech",
+        domain_id: "2020368761",
+        chain_id: "196",
+        nativeUSDC: ''
     }
 ];
 
@@ -163,4 +173,6 @@ export const WETH_CONFIG: Record<number, string> = {
     1835365481: "0x420000000000000000000000000000000000000a",
     // mode
     1836016741: "0x4200000000000000000000000000000000000006",
+    // xlayer
+    2020368761: "0x5a77f1443d16ee5761d310e38b62f77f726bc71c",
 };

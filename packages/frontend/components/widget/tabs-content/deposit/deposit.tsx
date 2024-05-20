@@ -34,7 +34,7 @@ import trim_decimal_overflow from "../../../../utils/trimTooLongDecimals";
 import Loader from "../loader/loader";
 import { Error, ManageAccounts, PriceCheck, Wallet } from "@mui/icons-material";
 import { useNativeCurrency } from "../../../../hooks/useNativeCurrency";
-
+import filterChains from "../../../../utils/filterChains";
 
 const tokens = [
     {
@@ -101,18 +101,18 @@ export default function Deposit() {
             setConnextSDK(connextSDKInstance.sdkBase);
             setConnextSDKUtils(connextSDKInstance.sdkUtils);
             await connextSDKInstance.sdkBase.getSupported().then(data => {
-                setSupportedChains(data.filter(i => i.chainId !== +VAULT_ADPATER_CHAIN_ID));
+                setSupportedChains(filterChains(data));
                 setChain(data[0]);
 
                 // fetch and write balances into state
                 const balancesData: TBalanceInChain[] = [];
-                data.forEach(ch => {
+                filterChains(data).forEach(ch => {
                     const cfg: TBalanceCfg = {
                         address,
                         chainId: ch.chainId,
                     }
 
-                    if (["xdai", "metis", "polygon", "bsc"].includes(ch.name)) {
+                    if (["xdai", "metis", "polygon", "bsc", "xlayer"].includes(ch.name)) {
                         cfg.token = WETH_CONFIG[+ch.domainId] as `0x${string}`;
                     }
 
@@ -132,7 +132,7 @@ export default function Deposit() {
         address: address,
         chainId: chain?.chainId,
     }
-    if (["xdai", "metis", "polygon", "bsc"].includes(chain?.name as string)) {
+    if (["xdai", "metis", "polygon", "bsc", "xlayer"].includes(chain?.name as string)) {
         /* @ts-ignore */
         cfg.token = WETH_CONFIG[+chain?.domainId];
     }
